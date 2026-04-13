@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -54,19 +54,31 @@ pub fn build(b: *std.Build) void {
         const dirs = .{ "core", "support", "arm", "x86", "ujit" };
         const srcs = .{ core_srcs, support_srcs, arm_srcs, x86_srcs, ujit_srcs };
 
+        var cppflags: std.ArrayList([]const u8) = .empty;
+        try cppflags.appendSlice(b.allocator, &.{
+            "-fvisibility=hidden",
+            "-fno-exceptions",
+            "-fno-rtti",
+            "-fno-math-errno",
+            "-fno-threadsafe-statics",
+            "-fno-semantic-interposition",
+            "-fno-trapping-math",
+            "-fno-finite-math-only",
+            "-mllvm",
+            "--disable-loop-idiom-all",
+        });
+        if (optimize != .Debug)
+            try cppflags.appendSlice(b.allocator, &.{
+                "-fmerge-all-constants",
+                "-ftree-vectorize",
+            });
+
         inline for (dirs, srcs) |dir, src|
             lib.root_module.addCSourceFiles(.{
                 .language = .cpp,
                 .root = upstream_dep.path("asmjit/" ++ dir),
                 .files = src,
-                .flags = &.{
-                    "-fvisibility=hidden",
-                    "-fno-exceptions",
-                    "-fno-rtti",
-                    "-fno-math-errno",
-                    "-fno-threadsafe-statics",
-                    "-fmerge-all-constants",
-                },
+                .flags = cppflags.items,
             });
     }
 
