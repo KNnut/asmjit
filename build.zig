@@ -67,7 +67,7 @@ pub fn build(b: *std.Build) !void {
             "-mllvm",
             "--disable-loop-idiom-all",
         });
-        if (optimize != .Debug)
+        if (optimize != .debug)
             try cppflags.appendSlice(b.allocator, &.{
                 "-fmerge-all-constants",
                 "-ftree-vectorize",
