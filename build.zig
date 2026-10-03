@@ -11,6 +11,7 @@ pub fn build(b: *std.Build) !void {
             .target = target,
             .optimize = optimize,
             .link_libcpp = true,
+            .sanitize_c = .off,
         }),
     });
 
@@ -51,11 +52,12 @@ pub fn build(b: *std.Build) !void {
     }
 
     {
-        const dirs = .{ "core", "support", "arm", "x86", "ujit" };
-        const srcs = .{ core_srcs, support_srcs, arm_srcs, x86_srcs, ujit_srcs };
+        const dirs = .{ "core", "axl", "arm", "x86", "ujit" };
+        const srcs = .{ core_srcs, axl_srcs, arm_srcs, x86_srcs, ujit_srcs };
 
         var cppflags: std.ArrayList([]const u8) = .empty;
         try cppflags.appendSlice(b.allocator, &.{
+            "-std=c++20",
             "-fvisibility=hidden",
             "-fno-exceptions",
             "-fno-rtti",
@@ -89,86 +91,81 @@ pub fn build(b: *std.Build) !void {
 // asmjit/core
 // Core API, backend independent except relocations
 const core_srcs = &[_][]const u8{
-    "archtraits.cpp",
+    "arch_traits.cpp",
     "assembler.cpp",
     "builder.cpp",
-    "codeholder.cpp",
-    "codewriter.cpp",
+    "code_holder.cpp",
+    "code_writer.cpp",
     "compiler.cpp",
-    "constpool.cpp",
-    "cpuinfo.cpp",
-    "emithelper.cpp",
+    "const_pool.cpp",
+    "cpu_info.cpp",
+    "debug_utils.cpp",
+    "emit_helper.cpp",
     "emitter.cpp",
-    "emitterutils.cpp",
+    "emitter_utils.cpp",
     "environment.cpp",
-    "errorhandler.cpp",
+    "error.cpp",
+    "error_handler.cpp",
     "formatter.cpp",
     "func.cpp",
-    "funcargscontext.cpp",
-    "globals.cpp",
+    "func_args_context.cpp",
     "inst.cpp",
-    "instdb.cpp",
-    "jitallocator.cpp",
-    "jitruntime.cpp",
+    "inst_db.cpp",
+    "jit_allocator.cpp",
+    "jit_runtime.cpp",
     "logger.cpp",
-    "operand.cpp",
-    "osutils.cpp",
-    "ralocal.cpp",
-    "rapass.cpp",
-    "rastack.cpp",
+    "os_utils.cpp",
+    "ra_local.cpp",
+    "ra_pass.cpp",
+    "ra_stack.cpp",
     "string.cpp",
     "target.cpp",
     "type.cpp",
-    "virtmem.cpp",
+    "virt_mem.cpp",
 };
 
-// asmjit/support
-// Support classes and functions
-const support_srcs = &[_][]const u8{
+// asmjit/axl
+// Auxiliary library, low level primitives and utilities
+const axl_srcs = &[_][]const u8{
     "arena.cpp",
-    "arenabitset.cpp",
-    "arenahash.cpp",
-    "arenalist.cpp",
-    "arenatree.cpp",
-    "arenavector.cpp",
-    "support.cpp",
+    "arena_bit_set.cpp",
+    "arena_hash.cpp",
+    "arena_vector.cpp",
 };
 
 // asmjit/arm
 // ARM specific API, designed to be common for both AArch32 and AArch64
 const arm_srcs = &[_][]const u8{
-    "a64assembler.cpp",
-    "a64builder.cpp",
-    "a64compiler.cpp",
-    "a64emithelper.cpp",
-    "a64formatter.cpp",
-    "a64func.cpp",
-    "a64instapi.cpp",
-    "a64instdb.cpp",
-    "a64operand.cpp",
-    "a64rapass.cpp",
-    "armformatter.cpp",
+    "a64_assembler.cpp",
+    "a64_builder.cpp",
+    "a64_compiler.cpp",
+    "a64_emit_helper.cpp",
+    "a64_formatter.cpp",
+    "a64_func.cpp",
+    "a64_inst_api.cpp",
+    "a64_inst_db.cpp",
+    "a64_ra_pass.cpp",
+    "arm_formatter.cpp",
 };
 
 // asmjit/x86
 // x86 specific API, used only by x86 and x64 backends
 const x86_srcs = &[_][]const u8{
-    "x86assembler.cpp",
-    "x86builder.cpp",
-    "x86compiler.cpp",
-    "x86emithelper.cpp",
-    "x86formatter.cpp",
-    "x86func.cpp",
-    "x86instapi.cpp",
-    "x86instdb.cpp",
-    "x86operand.cpp",
-    "x86rapass.cpp",
+    "x86_assembler.cpp",
+    "x86_builder.cpp",
+    "x86_compiler.cpp",
+    "x86_emit_helper.cpp",
+    "x86_formatter.cpp",
+    "x86_func.cpp",
+    "x86_inst_api.cpp",
+    "x86_inst_db.cpp",
+    "x86_ra_pass.cpp",
 };
 
 // asmjit/ujit
 // Universal JIT API
 const ujit_srcs = &[_][]const u8{
-    "unicompiler_a64.cpp",
-    "unicompiler_x86.cpp",
-    "vecconsttable.cpp",
+    "uni_compiler_a64.cpp",
+    "uni_compiler_x86.cpp",
+    "vec_const_table.cpp",
 };

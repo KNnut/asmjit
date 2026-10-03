@@ -1,12 +1,12 @@
 .{
     .name = .asmjit,
-    .version = "1.21.0",
+    .version = "1.23.0",
     .fingerprint = 0xa343e3a0701ae966,
     .minimum_zig_version = "0.17.0",
     .dependencies = .{
         .asmjit = .{
-            .url = "git+https://github.com/asmjit/asmjit#0bd5787b54b575ed94bf32ac452153b34385c514",
-            .hash = "N-V-__8AAHSKmgBs21PNPboCKJShy6hQd8Rq2KxXXF4oJXoT",
+            .url = "git+https://github.com/asmjit/asmjit#0d7f01052f2d3f6d6b9bb6714ef32bd7b80177eb",
+            .hash = "N-V-__8AAG8JnQCQTQ5uXIJDX-gtbyh-BmS-UOzoNvFciiFt",
         },
     },
     .paths = .{
